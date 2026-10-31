@@ -2,98 +2,111 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+	static ArrayList<Expense> expenses = new ArrayList<>();
+	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) {
-		ArrayList<Expense> expenses = new ArrayList<>();
-		Scanner scanner = new Scanner(System.in);
-
-		System.out.printf("EXPENSE TRACKER   [a]dd  [v]iew  [e]dit  [d]elete  [q]uit%n%n");
+		System.out.println("       -- EXPENSE TRACKER --       ");
+		System.out.println("[a]dd [v]iew [e]dit [d]elete [q]uit\n");
 
 		for (;;) {
-			System.out.print(">> ");
-			String input = scanner.nextLine().trim();
-			if (input.isEmpty() || input.length() != 1)
-				continue;
-
-			char code = Character.toLowerCase(input.charAt(0));
+			char code = promptChar(">>> ");
 			switch (code) {
-				case 'a': addExpense(expenses, scanner);    break;
-				case 'v': viewExpenses(expenses);           break;
-				case 'e': editExpense(expenses, scanner);   break;
-				case 'd': deleteExpense(expenses, scanner); break;
-				case 'q':
-					scanner.close();
-					System.out.println("Bye!");
-					return;
-				default:
-					System.out.println("-- Invalid code --");
-					break;
+				case 'a': addExpense();    break;
+				case 'v': viewExpenses();  break;
+				case 'e': editExpense();   break;
+				case 'd': deleteExpense(); break;
+				case 'q': scanner.close(); return;
 			}
 		}
 	}
 
-	private static void addExpense(ArrayList<Expense> expenses, Scanner scanner) {
+	private static void addExpense() {
 		double amount;
-		String method, description;
+		String method;
+		String desc;
 
-		for (;;) {
-			System.out.print("Amount (q to cancel): ");
-			String input = scanner.nextLine().trim();
-			if (input.equalsIgnoreCase("q"))
-				return;
-			try {
-				amount = Double.parseDouble(input);
-			} catch (NumberFormatException e) {
-				System.out.println("-- Invalid Amount --");
-				continue;
-			}
-			if (!Double.isFinite(amount) || amount <= 0) {
-				System.out.println("-- Invalid Amount --");
-				continue;
-			}
+		if ((amount = promptDouble("Add Amount: ")) ==   -1) return;
+		if ((method = promptString("Add Method: ")) == null) return;
+		if ((desc   = promptString("Add Desc.: "))  == null) return;
 
-			System.out.print("Method: ");
-			method = scanner.nextLine().trim();
-
-			System.out.print("Description: ");
-			description = scanner.nextLine().trim();
-
-			expenses.add(new Expense(amount, method, description));
-			System.out.println("-- Expense added --");
-		}
+		expenses.add(new Expense(amount, method, desc));
+		System.out.println("-- Expense added --");
 	}
 
-	private static void viewExpenses(ArrayList<Expense> expenses) {
+	private static void viewExpenses() {
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to view --");
 			return;
 		}
 
-		System.out.println("#       | Amount      | Method          | Description");
+		System.out.println("No.     | Amount      | Method          | Desc.");
+
 		for (int i = 0; i < expenses.size(); i++) {
 			Expense expense = expenses.get(i);
-			System.out.printf("%-7d | ₱%-10.2f | %-15s | %s%n",
+			System.out.printf("%-7d | ₱%-10.2f | %-15s | %s\n",
 			                  i + 1,
 			                  expense.getAmount(),
 			                  expense.getMethod(),
-			                  expense.getDescription());
+			                  expense.getDesc());
 		}
 	}
 
-	private static void editExpense(ArrayList<Expense> expenses, Scanner scanner) {
+	private static void editExpense() {
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to edit --");
 			return;
 		}
 
 		int index;
-		String input;
+		double amount;
+		String method;
+		String desc;
+
+		if ((index  = promptInt("Edit Expense #: ")) ==   -1) return;
+		if ((amount = promptDouble("Edit Amount: ")) ==   -1) return;
+		if ((method = promptString("Edit Method: ")) == null) return;
+		if ((desc   = promptString("Edit Desc.: "))  == null) return;
+
+		Expense expense = expenses.get(index);
+		expense.update(amount, method, desc);
+		System.out.println("-- Expense updated --");
+	}
+
+	private static void deleteExpense() {
+		if (expenses.isEmpty()) {
+			System.out.println("-- No expenses to delete --");
+			return;
+		}
+
+		int index;
+		if ((index = promptInt("Delete Expense #: ")) == -1) return;
+
+		expenses.remove(index);
+		System.out.println("-- Expense deleted --");
+	}
+
+	private static char promptChar(String prompt) {
+		for (;;) {
+			System.out.print(prompt);
+			String input = scanner.nextLine().trim();
+
+			if (input.isEmpty() || input.length() != 1)
+				continue;
+			return Character.toLowerCase(input.charAt(0));
+		}
+	}
+
+	private static int promptInt(String prompt) {
+		int index;
 
 		for (;;) {
-			System.out.print("Edit Expense # (q to cancel): ");
-			input = scanner.nextLine().trim();
+			System.out.print(prompt);
+			String input = scanner.nextLine().trim();
+
 			if (input.equalsIgnoreCase("q"))
-				return;
+				return -1;
+
 			try {
 				index = Integer.parseInt(input);
 			} catch (NumberFormatException e) {
@@ -105,92 +118,63 @@ public class Main {
 				System.out.println("-- Expense # not found --");
 				continue;
 			}
-			break;
-		}
 
+			return index - 1;
+		}
+	}
+
+	private static double promptDouble(String prompt) {
 		double amount;
 
 		for (;;) {
-			System.out.print("Amount (q to cancel): ");
-			input = scanner.nextLine().trim();
+			System.out.print(prompt);
+			String input = scanner.nextLine().trim();
+
 			if (input.equalsIgnoreCase("q"))
-				return;
+				return -1;
+
 			try {
 				amount = Double.parseDouble(input);
 			} catch (NumberFormatException e) {
 				System.out.println("-- Invalid Amount --");
 				continue;
 			}
-			if (!Double.isFinite(amount) || amount <= 0) {
+
+			if (!Double.isFinite(amount) || amount < 0) {
 				System.out.println("-- Invalid Amount --");
 				continue;
 			}
-			break;
+
+			return amount;
 		}
-
-		System.out.print("Method (q to cancel): ");
-		String method = scanner.nextLine().trim();
-		if (method.equalsIgnoreCase("q"))
-			return;
-
-		System.out.print("Description (q to cancel): ");
-		String description = scanner.nextLine().trim();
-		if (description.equalsIgnoreCase("q"))
-			return;
-
-		Expense expense = expenses.get(index - 1);
-		expense.update(amount, method, description);
-		System.out.println("-- Expense updated --");
 	}
 
-	private static void deleteExpense(ArrayList<Expense> expenses, Scanner scanner) {
-		int index;
+	private static String promptString(String prompt) {
+		System.out.print(prompt);
+		String input = scanner.nextLine().trim();
 
-		for (;;) {
-			if (expenses.isEmpty()) {
-				System.out.println("-- No expenses to delete --");
-				return;
-			}
-
-			System.out.print("Delete Expense # (q to cancel): ");
-			String input = scanner.nextLine().trim();
-			if (input.equalsIgnoreCase("q"))
-				return;
-			try {
-				index = Integer.parseInt(input);
-			} catch (NumberFormatException e) {
-				System.out.println("-- Invalid Expense # --");
-				continue;
-			}
-
-			if (index < 1 || index > expenses.size()) {
-				System.out.println("-- Expense # not found --");
-				continue;
-			}
-
-			expenses.remove(index - 1);
-			System.out.println("-- Expense deleted --");
-		}
+		if (input.equalsIgnoreCase("q"))
+			return null;
+		return input;
 	}
 }
 
 class Expense {
 	private double amount;
-	private String method, description;
+	private String method;
+	private String desc;
 
-	Expense(double amount, String method, String description) {
+	Expense(double amount, String method, String desc) {
+		update(amount, method, desc);
+	}
+
+	public void update(double amount, String method, String desc) {
 		this.amount = amount;
 		this.method = method;
-		this.description = description;
+		this.desc   = desc;
 	}
 
 	public double getAmount() { return amount; }
 	public String getMethod() { return method; }
-	public String getDescription() { return description; }
-
-	public void update(double amount, String method, String description) {
-		this.amount = amount;
-		this.method = method;
-		this.description = description;
-	}
+	public String getDesc()   { return desc; }
 }
