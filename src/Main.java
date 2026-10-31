@@ -10,7 +10,7 @@ public class Main {
 		System.out.println("[a]dd [v]iew [e]dit [d]elete [q]uit\n");
 
 		for (;;) {
-			char code = promptChar(">>> ");
+			char code = promptCode(">>> ");
 			switch (code) {
 				case 'a': addExpense();    break;
 				case 'v': viewExpenses();  break;
@@ -22,13 +22,17 @@ public class Main {
 	}
 
 	private static void addExpense() {
-		double amount;
-		String method;
-		String desc;
+		double amount = promptAmount("Add Amount: ");
+		if (amount == -1)
+			return;
 
-		if ((amount = promptDouble("Add Amount: ")) ==   -1) return;
-		if ((method = promptString("Add Method: ")) == null) return;
-		if ((desc   = promptString("Add Desc.: "))  == null) return;
+		String method = promptMethod("Add Method: ");
+		if (method == null)
+			return;
+
+		String desc = promptDesc("Add Desc.: ");
+		if (desc == null)
+			return;
 
 		expenses.add(new Expense(amount, method, desc));
 		System.out.println("-- Expense added --");
@@ -42,10 +46,10 @@ public class Main {
 
 		System.out.println("No.     | Amount      | Method          | Desc.");
 
-		for (int i = 0; i < expenses.size(); i++) {
-			Expense expense = expenses.get(i);
+		for (int index = 0; index < expenses.size(); index++) {
+			Expense expense = expenses.get(index);
 			System.out.printf("%-7d | ₱%-10.2f | %-15s | %s\n",
-			                  i + 1,
+			                  index + 1,
 			                  expense.getAmount(),
 			                  expense.getMethod(),
 			                  expense.getDesc());
@@ -58,17 +62,23 @@ public class Main {
 			return;
 		}
 
-		int index;
-		double amount;
-		String method;
-		String desc;
+		int number = promptNumber("Edit No.: ");
+		if (number == -1)
+			return;
 
-		if ((index  = promptInt("Edit Expense #: ")) ==   -1) return;
-		if ((amount = promptDouble("Edit Amount: ")) ==   -1) return;
-		if ((method = promptString("Edit Method: ")) == null) return;
-		if ((desc   = promptString("Edit Desc.: "))  == null) return;
+		double amount = promptAmount("Edit Amount: ");
+		if (amount == -1)
+			return;
 
-		Expense expense = expenses.get(index);
+		String method = promptMethod("Edit Method: ");
+		if (method == null)
+			return;
+
+		String desc = promptDesc("Edit Desc.: ");
+		if (desc == null)
+			return;
+
+		Expense expense = expenses.get(number - 1);
 		expense.update(amount, method, desc);
 		System.out.println("-- Expense updated --");
 	}
@@ -79,81 +89,79 @@ public class Main {
 			return;
 		}
 
-		int index;
-		if ((index = promptInt("Delete Expense #: ")) == -1) return;
+		int number = promptNumber("Delete No.: ");
+		if (number == -1)
+			return;
 
-		expenses.remove(index);
+		expenses.remove(number - 1);
 		System.out.println("-- Expense deleted --");
 	}
 
-	private static char promptChar(String prompt) {
+	private static char promptCode(String prompt) {
 		for (;;) {
 			System.out.print(prompt);
 			String input = scanner.nextLine().trim();
-
-			if (input.isEmpty() || input.length() != 1)
-				continue;
-			return Character.toLowerCase(input.charAt(0));
+			if (!input.isBlank())
+				return input.charAt(0);
 		}
 	}
 
-	private static int promptInt(String prompt) {
-		int index;
+	private static int promptNumber(String prompt) {
+		int number;
 
 		for (;;) {
 			System.out.print(prompt);
 			String input = scanner.nextLine().trim();
-
-			if (input.equalsIgnoreCase("q"))
+			if (input.equals("q"))
 				return -1;
 
 			try {
-				index = Integer.parseInt(input);
+				number = Integer.parseInt(input);
+				if (number >= 1 && number <= expenses.size())
+					return number;
+				System.out.println("-- Enter a valid No. --");
 			} catch (NumberFormatException e) {
-				System.out.println("-- Invalid Expense # --");
-				continue;
+				System.out.println("-- Invalid No. --");
 			}
-
-			if (index < 1 || index > expenses.size()) {
-				System.out.println("-- Expense # not found --");
-				continue;
-			}
-
-			return index - 1;
 		}
 	}
 
-	private static double promptDouble(String prompt) {
+	private static double promptAmount(String prompt) {
 		double amount;
 
 		for (;;) {
 			System.out.print(prompt);
 			String input = scanner.nextLine().trim();
-
-			if (input.equalsIgnoreCase("q"))
+			if (input.equals("q"))
 				return -1;
 
 			try {
 				amount = Double.parseDouble(input);
+				if (Double.isFinite(amount) && amount >= 0)
+					return amount;
+				System.out.println("-- Enter a valid Amount --");
 			} catch (NumberFormatException e) {
 				System.out.println("-- Invalid Amount --");
-				continue;
 			}
-
-			if (!Double.isFinite(amount) || amount < 0) {
-				System.out.println("-- Invalid Amount --");
-				continue;
-			}
-
-			return amount;
 		}
 	}
 
-	private static String promptString(String prompt) {
+	private static String promptMethod(String prompt) {
+		for (;;) {
+			System.out.print(prompt);
+			String input = scanner.nextLine().trim();
+			if (input.equals("q"))
+				return null;
+			if (!input.isBlank())
+				return input;
+			System.out.println("-- Enter a Method --");
+		}
+	}
+
+	private static String promptDesc(String prompt) {
 		System.out.print(prompt);
 		String input = scanner.nextLine().trim();
-
-		if (input.equalsIgnoreCase("q"))
+		if (input.equals("q"))
 			return null;
 		return input;
 	}
