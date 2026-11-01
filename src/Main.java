@@ -27,7 +27,7 @@ public class Main {
 	private static void addExpense() {
 		double amount = promptAmount("Add Amount: ");
 		String method = promptString("Add Method: ");
-		String desc   = promptString("Add Desc.: ");
+		String desc   = promptString("Add Desc. : ");
 
 		expenses.add(new Expense(amount, method, desc));
 		System.out.println("-- Expense added --");
@@ -59,9 +59,12 @@ public class Main {
 		int number = promptNumber("Edit No.: ");
 		Expense expense = expenses.get(number - 1);
 
-		double amount = promptAmount("Edit Amount: ", expense.getAmount());
-		String method = promptString("Edit Method: ", expense.getMethod());
-		String desc   = promptString("Edit Desc.: ",  expense.getDesc());
+		double amount =
+			promptAmount("Edit Amount (Enter to skip): ", expense.getAmount());
+		String method =
+			promptString("Edit Method (Enter to skip): ", expense.getMethod());
+		String desc =
+			promptString("Edit Desc.  (Enter to skip): ", expense.getDesc());
 
 		expense.setAmount(amount);
 		expense.setMethod(method);
