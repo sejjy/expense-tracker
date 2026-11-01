@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-	static ArrayList<Expense> expenses = new ArrayList<>();
-	static Scanner scanner = new Scanner(System.in);
+	static final ArrayList<Expense> expenses = new ArrayList<>();
+	static final Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) {
 		System.out.println("          EXPENSE TRACKER          ");
@@ -25,9 +25,9 @@ public class Main {
 	}
 
 	private static void addExpense() {
-		double amount = promptParseAmount("Add Amount: ");
-		String method = promptMethod("Add Method: ");
-		String desc   = promptDesc("Add Desc.: ");
+		double amount = promptAmount("Add Amount: ");
+		String method = promptString("Add Method: ");
+		String desc   = promptString("Add Desc.: ");
 
 		expenses.add(new Expense(amount, method, desc));
 		System.out.println("-- Expense added --");
@@ -40,10 +40,10 @@ public class Main {
 		}
 
 		System.out.println("No.     | Amount      | Method          | Desc.");
-		for (int index = 0; index < expenses.size(); index++) {
-			Expense expense = expenses.get(index);
+		for (int i = 0; i < expenses.size(); i++) {
+			Expense expense = expenses.get(i);
 			System.out.printf("%-7d | ₱%-10.2f | %-15s | %s\n",
-			                  index + 1,
+			                  i + 1,
 			                  expense.getAmount(),
 			                  expense.getMethod(),
 			                  expense.getDesc());
@@ -56,12 +56,13 @@ public class Main {
 			return;
 		}
 
-		int number    = promptParseNumber("Edit No.: ");
-		double amount = promptParseAmount("Edit Amount: ");
-		String method = promptMethod("Edit Method: ");
-		String desc   = promptDesc("Edit Desc.: ");
-
+		int number = promptNumber("Edit No.: ");
 		Expense expense = expenses.get(number - 1);
+
+		double amount = promptAmount("Edit Amount: ", expense.getAmount());
+		String method = promptString("Edit Method: ", expense.getMethod());
+		String desc   = promptString("Edit Desc.: ",  expense.getDesc());
+
 		expense.setAmount(amount);
 		expense.setMethod(method);
 		expense.setDesc(desc);
@@ -74,94 +75,102 @@ public class Main {
 			return;
 		}
 
-		int number = promptParseNumber("Delete No.: ");
+		int number = promptNumber("Delete No.: ");
 
 		expenses.remove(number - 1);
 		System.out.println("-- Expense deleted --");
 	}
 
-	private static char promptOption(String prompt) {
+	private static char promptOption(String message) {
 		for (;;) {
-			String input = promptStr(prompt);
+			String input = prompt(message).trim();
 			if (input.length() == 1) {
 				return input.charAt(0);
 			}
-			System.out.println("-- Invalid option --");
+			if (input.length() > 1) {
+				System.out.println("-- Invalid option --");
+			}
 		}
 	}
 
-	private static int promptParseNumber(String prompt) {
+	private static int promptNumber(String message) {
 		for (;;) {
-			String input = promptStr(prompt);
-			if (!isValidNumber(input)) {
-				System.out.println("-- Invalid No. --");
-				continue;
+			Integer number = parseNumber(prompt(message));
+			if (number != null) {
+				return number;
 			}
-			try {
-				return Integer.parseInt(input);
-			} catch (NumberFormatException e) {
-				System.out.println("!! Invalid No. !!");
-			}
+			System.out.println("-- Invalid No. --");
 		}
 	}
 
-	private static double promptParseAmount(String prompt) {
-		for (;;) {
-			String input = promptStr(prompt);
-			if (!isValidAmount(input)) {
-				System.out.println("-- Invalid Amount --");
-				continue;
-			}
-			try {
-				return Double.parseDouble(input);
-			} catch (NumberFormatException e) {
-				System.out.println("!! Invalid Amount !!");
-			}
-		}
-	}
-
-	private static String promptMethod(String prompt) {
-		for (;;) {
-			String input = promptStr(prompt);
-			if (input.isBlank()) {
-				System.out.println("-- Method cannot be empty --");
-				continue;
-			}
-			return input;
-		}
-	}
-
-	private static String promptDesc(String prompt) {
-		for (;;) {
-			String input = promptStr(prompt);
-			if (input.isBlank()) {
-				System.out.println("-- Desc. cannot be empty --");
-				continue;
-			}
-			return input;
-		}
-	}
-
-	private static String promptStr(String prompt) {
-		System.out.print(prompt);
-		return scanner.nextLine().trim();
-	}
-
-	public static boolean isValidNumber(String str) {
+	private static Integer parseNumber(String s) {
 		try {
-			int number = Integer.parseInt(str);
-			return number >= 1 && number <= expenses.size();
+			int number = Integer.parseInt(s.trim());
+			if (number >= 1 && number <= expenses.size()) {
+				return number;
+			}
 		} catch (NumberFormatException e) {
-			return false;
+			// Invalid No.
+		}
+		return null;
+	}
+
+	private static double promptAmount(String message, double current) {
+		for (;;) {
+			String input = prompt(message);
+			if (input.isBlank()) {
+				return current;
+			}
+			double amount = parseAmount(input);
+			if (!Double.isNaN(amount)) {
+				return amount;
+			}
+			System.out.println("-- Invalid Amount --");
 		}
 	}
 
-	public static boolean isValidAmount(String str) {
-		try {
-			double amount = Double.parseDouble(str);
-			return amount >= 0.0 && Double.isFinite(amount);
-		} catch (NumberFormatException e) {
-			return false;
+	private static double promptAmount(String message) {
+		for (;;) {
+			double amount = parseAmount(prompt(message));
+			if (!Double.isNaN(amount)) {
+				return amount;
+			}
+			System.out.println("-- Invalid Amount --");
 		}
+	}
+
+	private static double parseAmount(String s) {
+		try {
+			double amount = Double.parseDouble(s.trim());
+			if (amount >= 0.0 && Double.isFinite(amount)) {
+				return amount;
+			}
+		} catch (NumberFormatException e) {
+			// Invalid Amount
+		}
+		return Double.NaN;
+	}
+
+	private static String promptString(String message, String current) {
+		String input = prompt(message).trim();
+		if (input.isBlank()) {
+			return current;
+		}
+		return input;
+	}
+
+	private static String promptString(String message) {
+		for (;;) {
+			String input = prompt(message).trim();
+			if (!input.isBlank()) {
+				return input;
+			}
+			System.out.println("-- Cannot be empty --");
+		}
+	}
+
+	private static String prompt(String message) {
+		System.out.print(message);
+		return scanner.nextLine();
 	}
 }
