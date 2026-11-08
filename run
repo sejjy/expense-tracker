@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+if ! command -v java &>/dev/null; then
+	printf "%s: command not found: java\n" "${0##*/}"
+	exit 1
+fi
+
+cd "$(dirname "$0")" || exit 1
+
+major=$(java --version 2>/dev/null | awk 'NR==1 {print int($2)}')
+option=
+
+# Suppress warnings on restricted methods
+# Info: https://docs.oracle.com/en/java/javase/22/core/restricted-methods.html
+if [[ $major -ge 24 ]]; then
+	option="--enable-native-access=ALL-UNNAMED"
+fi
+
+java $option -cp "bin:lib/*" Main
