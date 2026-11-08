@@ -1,11 +1,30 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+	static final String DB_URL = "jdbc:sqlite:expenses.db";
+
 	static final ArrayList<Expense> expenses = new ArrayList<>();
 	static final Scanner scanner = new Scanner(System.in);
+	static Connection connection;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
+		connection = DriverManager.getConnection(DB_URL);
+		String sql = "CREATE TABLE IF NOT EXISTS expenses" +
+		             "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+			          "amount REAL NOT NULL, " +
+			          "method TEXT NOT NULL, " +
+			          "description TEXT NOT NULL)";
+		try (Statement statement = connection.createStatement()) {
+			statement.executeUpdate(sql);
+		}
+
 		System.out.println("          EXPENSE TRACKER          ");
 		System.out.println("[a]dd [v]iew [e]dit [d]elete [q]uit\n");
 
@@ -16,7 +35,10 @@ public class Main {
 				case 'v': viewExpenses();  break;
 				case 'e': editExpense();   break;
 				case 'd': deleteExpense(); break;
-				case 'q': scanner.close(); return;
+				case 'q':
+					connection.close();
+					scanner.close();
+					return;
 				default:
 					System.out.println("-- Unknown option --");
 					break;
@@ -24,16 +46,24 @@ public class Main {
 		}
 	}
 
-	private static void addExpense() {
+	private static void addExpense() throws SQLException {
 		double amount = promptAmount("Add Amount: ");
 		String method = promptString("Add Method: ");
 		String desc   = promptString("Add Desc. : ");
 
-		expenses.add(new Expense(amount, method, desc));
+		String sql = "INSERT INTO expenses" +
+		             "(amount, method, description) VALUES (?, ?, ?)";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setDouble(1, amount);
+			statement.setString(2, method);
+			statement.setString(3, desc);
+			statement.executeUpdate();
+		}
 		System.out.println("-- Expense added --");
 	}
 
-	private static void viewExpenses() {
+	private static void viewExpenses() throws SQLException {
+		loadExpenses();
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to view --");
 			return;
@@ -50,7 +80,8 @@ public class Main {
 		}
 	}
 
-	public static void editExpense() {
+	public static void editExpense() throws SQLException {
+		loadExpenses();
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to edit --");
 			return;
@@ -69,19 +100,50 @@ public class Main {
 		expense.setAmount(amount);
 		expense.setMethod(method);
 		expense.setDesc(desc);
+		
+		String sql = "UPDATE expenses " +
+		             "SET amount = ?, method = ?, description = ? WHERE id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setDouble(1, expense.getAmount());
+			statement.setString(2, expense.getMethod());
+			statement.setString(3, expense.getDesc());
+			statement.setInt(4, expense.getId());
+			statement.executeUpdate();
+		}
 		System.out.println("-- Expense updated --");
 	}
 
-	private static void deleteExpense() {
+	private static void deleteExpense() throws SQLException {
+		loadExpenses();
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to delete --");
 			return;
 		}
 
 		int number = promptNumber("Delete No.: ");
+		int id = expenses.get(number - 1).getId();
 
-		expenses.remove(number - 1);
+		String sql = "DELETE FROM expenses WHERE id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, id);
+			statement.executeUpdate();
+		}
 		System.out.println("-- Expense deleted --");
+	}
+
+	private static void loadExpenses() throws SQLException {
+		expenses.clear();
+		String sql =
+			"SELECT id, amount, method, description FROM expenses ORDER BY id";
+		try (Statement statement = connection.createStatement();
+		     ResultSet resultSet = statement.executeQuery(sql)) {
+			while (resultSet.next()) {
+				expenses.add(new Expense(resultSet.getInt("id"),
+				                         resultSet.getDouble("amount"),
+				                         resultSet.getString("method"),
+				                         resultSet.getString("description")));
+			}
+		}
 	}
 
 	private static char promptOption(String message) {
