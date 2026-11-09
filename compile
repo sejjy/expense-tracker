@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
 
-mkdir -p bin
+cd "$(dirname "$0")" || exit 1
+
+if ! command -v javac >/dev/null; then
+	printf "%s: command not found: javac\n" "${0##*/}" >&2
+	exit 1
+fi
+
+if [[ ! -d bin ]]; then
+	mkdir -p bin
+fi
+
 javac -d bin src/*.java
