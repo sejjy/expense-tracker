@@ -1,11 +1,13 @@
 import java.util.Scanner;
 
 public class Input {
+	public static class CancelException extends RuntimeException {}
+
 	static final Scanner scanner = new Scanner(System.in);
 	
 	public static char promptOption(String message) {
 		for (;;) {
-			String input = prompt(message).trim();
+			String input = read(message).trim();
 			if (input.length() == 1) {
 				return input.charAt(0);
 			}
@@ -92,6 +94,14 @@ public class Input {
 	}
 
 	private static String prompt(String message) {
+		String input = read(message).trim();
+		if (input.equals("c!")) {
+			throw new CancelException();
+		}
+		return input;
+	}
+
+	private static String read(String message) {
 		System.out.print(message);
 		return scanner.nextLine();
 	}

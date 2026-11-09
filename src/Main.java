@@ -6,8 +6,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		try (ExpenseRepository repo = new ExpenseRepository(DB_URL)) {
-			System.out.println("          EXPENSE TRACKER          ");
-			System.out.println("[a]dd [v]iew [e]dit [d]elete [q]uit\n");
+			System.out.println("               EXPENSE TRACKER               ");
+			System.out.println(
+				"[a]dd [v]iew [e]dit [d]elete [c!]ancel [q]uit\n");
 
 			for (;;) {
 				char option = Input.promptOption(">> ");
@@ -22,6 +23,8 @@ public class Main {
 							System.out.println("-- Unknown option --");
 							break;
 					}
+				} catch (Input.CancelException e) {
+					System.err.println("-- Cancelled -- ");
 				} catch (SQLException e) {
 					System.err.println("-- Database error: " +
 					                   e.getMessage() + " --");
