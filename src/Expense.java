@@ -11,7 +11,7 @@ public class Expense {
 		this.desc   = desc;
 	}
 
-	public int getId()        { return id; }
+	public int    getId()     { return id; }
 	public double getAmount() { return amount; }
 	public String getMethod() { return method; }
 	public String getDesc()   { return desc; }

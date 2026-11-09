@@ -7,8 +7,7 @@ public class Main {
 	public static void main(String[] args) {
 		try (ExpenseRepository repo = new ExpenseRepository(DB_URL)) {
 			System.out.println("               EXPENSE TRACKER               ");
-			System.out.println(
-				"[a]dd [v]iew [e]dit [d]elete [c!]ancel [q]uit\n");
+			System.out.println("[a]dd [v]iew [e]dit [d]elete [c!]ancel [q]uit\n");
 
 			for (;;) {
 				char option = Input.promptOption(">> ");
@@ -26,19 +25,16 @@ public class Main {
 				} catch (Input.CancelException e) {
 					System.err.println("-- Cancelled -- ");
 				} catch (SQLException e) {
-					System.err.println("-- Database error: " +
-					                   e.getMessage() + " --");
+					System.err.println("-- Database error: " + e.getMessage() + " --");
 				}
 			}
 		} catch (SQLException e) {
-			System.err.println("-- Fatal database error: " +
-			                   e.getMessage() + " --");
+			System.err.println("-- Fatal database error: " + e.getMessage() + " --");
 			System.exit(1);
 		}
 	}
 
-	private static void addExpense(ExpenseRepository repo)
-			throws SQLException {
+	private static void addExpense(ExpenseRepository repo) throws SQLException {
 		double amount = Input.promptAmount("Add Amount: ");
 		String method = Input.promptString("Add Method: ");
 		String desc   = Input.promptString("Add Desc. : ");
@@ -47,8 +43,7 @@ public class Main {
 		System.out.println("-- Expense added --");
 	}
 
-	private static void viewExpenses(ExpenseRepository repo)
-			throws SQLException {
+	private static void viewExpenses(ExpenseRepository repo) throws SQLException {
 		List<Expense> expenses = repo.getAll();
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to view --");
@@ -66,8 +61,7 @@ public class Main {
 		}
 	}
 
-	private static void editExpense(ExpenseRepository repo)
-			throws SQLException {
+	private static void editExpense(ExpenseRepository repo) throws SQLException {
 		List<Expense> expenses = repo.getAll();
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to edit --");
@@ -77,19 +71,15 @@ public class Main {
 		int number = Input.promptNumber("Edit No.: ", expenses.size());
 		Expense expense = expenses.get(number - 1);
 
-		expense.setAmount(Input.promptAmount("Edit Amount (Enter to skip): ",
-		                                     expense.getAmount()));
-		expense.setMethod(Input.promptString("Edit Method (Enter to skip): ",
-		                                     expense.getMethod()));
-		expense.setDesc(Input.promptString("Edit Desc.  (Enter to skip): ",
-		                                   expense.getDesc()));
+		expense.setAmount(Input.promptAmount("Edit Amount (Enter to skip): ", expense.getAmount()));
+		expense.setMethod(Input.promptString("Edit Method (Enter to skip): ", expense.getMethod()));
+		expense.setDesc(Input.promptString("Edit Desc.  (Enter to skip): ",   expense.getDesc()));
 
 		repo.update(expense);
 		System.out.println("-- Expense updated --");
 	}
 
-	private static void deleteExpense(ExpenseRepository repo)
-			throws SQLException {
+	private static void deleteExpense(ExpenseRepository repo) throws SQLException {
 		List<Expense> expenses = repo.getAll();
 		if (expenses.isEmpty()) {
 			System.out.println("-- No expenses to delete --");
@@ -97,6 +87,7 @@ public class Main {
 		}
 
 		int number = Input.promptNumber("Delete No.: ", expenses.size());
+
 		repo.delete(expenses.get(number - 1).getId());
 		System.out.println("-- Expense deleted --");
 	}

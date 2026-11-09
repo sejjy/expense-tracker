@@ -25,10 +25,8 @@ public class ExpenseRepository implements AutoCloseable {
 		}
 	}
 
-	public void add(double amount, String method, String desc)
-			throws SQLException {
-		String sql = "INSERT INTO expenses (amount, method, description) " +
-		             "VALUES (?, ?, ?)";
+	public void add(double amount, String method, String desc) throws SQLException {
+		String sql = "INSERT INTO expenses (amount, method, description) VALUES (?, ?, ?)";
 		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 			stmt.setDouble(1, amount);
 			stmt.setString(2, method);
@@ -39,23 +37,22 @@ public class ExpenseRepository implements AutoCloseable {
 
 	public List<Expense> getAll() throws SQLException {
 		List<Expense> expenses = new ArrayList<>();
-		String sql =
-			"SELECT id, amount, method, description FROM expenses ORDER BY id";
+		String sql = "SELECT id, amount, method, description FROM expenses ORDER BY id";
 		try (Statement stmt = connection.createStatement();
 		     ResultSet rset = stmt.executeQuery(sql)) {
 			while (rset.next()) {
-				expenses.add(new Expense(rset.getInt("id"),
-				                         rset.getDouble("amount"),
-				                         rset.getString("method"),
-				                         rset.getString("description")));
+				expenses.add(
+					new Expense(rset.getInt("id"),
+				                rset.getDouble("amount"),
+				                rset.getString("method"),
+				                rset.getString("description")));
 			}
 		}
 		return expenses;
 	}
 
 	public void update(Expense expense) throws SQLException {
-		String sql = "UPDATE expenses " +
-		             "SET amount = ?, method = ?, description = ? WHERE id = ?";
+		String sql = "UPDATE expenses SET amount = ?, method = ?, description = ? WHERE id = ?";
 		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 			stmt.setDouble(1, expense.getAmount());
 			stmt.setString(2, expense.getMethod());
