@@ -7,8 +7,4 @@ if ! command -v javac >/dev/null; then
 	exit 1
 fi
 
-if [[ ! -d bin ]]; then
-	mkdir -p bin
-fi
-
 javac -d bin src/*.java
