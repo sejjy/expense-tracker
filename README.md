@@ -4,7 +4,7 @@ Text-based expense tracker in Java
 
 ```text
                EXPENSE TRACKER               
-[a]dd [v]iew [e]dit [d]elete [c!]ancel [q]uit
+[a]dd [v]iew [e]dit [d]elete [!c]ancel [q]uit
 
 >> a
 Add Amount: 259
@@ -37,7 +37,7 @@ No.     | Amount      | Method          | Desc.
 1       | ₱259.00     | Cash            | Lunch
 2       | ₱275.00     | Card            | Movie Ticket
 >> d
-Delete No.: c!
+Delete No.: !c
 -- Cancelled --
 >> q
 ```

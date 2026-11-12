@@ -95,7 +95,7 @@ public class Input {
 
 	private static String prompt(String message) {
 		String input = read(message).trim();
-		if (input.equals("c!")) {
+		if (input.equals("!c")) {
 			throw new CancelException();
 		}
 		return input;
