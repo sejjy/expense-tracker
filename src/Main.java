@@ -13,8 +13,8 @@ public class Main {
 
 		System.out.println("               EXPENSE TRACKER               ");
 		System.out.println("[a]dd [l]ist [e]dit [d]elete [!c]ancel [q]uit\n");
-
 		System.out.println("(*)Required");
+
 		for (;;) {
 			try {
 				char option = Prompter.promptOption("=> ");
@@ -57,7 +57,6 @@ public class Main {
 
 		for (int i = 0; i < list.size(); i++) {
 			Expense expense = list.get(i);
-
 			System.out.printf("%-7d | ₱%-10.2f | %-15s | %s%n",
 			                  i + 1,
 			                  expense.getAmount(),

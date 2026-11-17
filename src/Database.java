@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
-	private static final String URL = "jdbc:sqlite:expenses.db";
-
 	private static Connection connect() throws SQLException {
-		return DriverManager.getConnection(URL);
+		String url = "jdbc:sqlite:expenses.db";
+		return DriverManager.getConnection(url);
 	}
 
 	public static void create() throws SQLException {
@@ -22,7 +21,6 @@ public class Database {
 				method      TEXT NOT NULL,
 				description TEXT NOT NULL
 			)""";
-
 		try (Connection conn = Database.connect();
 		     Statement stmt = conn.createStatement()) {
 			stmt.executeUpdate(sql);
@@ -31,7 +29,6 @@ public class Database {
 
 	public static void add(double amount, String method, String desc) throws SQLException {
 		String sql = "INSERT INTO expenses (amount, method, description) VALUES (?, ?, ?)";
-
 		try (Connection conn = Database.connect();
 		     PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setDouble(1, amount);
@@ -44,7 +41,6 @@ public class Database {
 	public static List<Expense> list() throws SQLException {
 		List<Expense> list = new ArrayList<>();
 		String sql = "SELECT * FROM expenses ORDER BY id";
-
 		try (Connection conn = Database.connect();
 		     Statement stmt = conn.createStatement();
 		     ResultSet rs = stmt.executeQuery(sql)) {
@@ -57,13 +53,11 @@ public class Database {
 						rs.getString("description")));
 			}
 		}
-
 		return list;
 	}
 
 	public static void edit(Expense expense) throws SQLException {
 		String sql = "UPDATE expenses SET amount = ?, method = ?, description = ? WHERE id = ?";
-
 		try (Connection conn = Database.connect();
 		     PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setDouble(1, expense.getAmount());
@@ -76,7 +70,6 @@ public class Database {
 
 	public static void delete(int id) throws SQLException {
 		String sql = "DELETE FROM expenses WHERE id = ?";
-
 		try (Connection conn = Database.connect();
 		     PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, id);
