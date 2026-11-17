@@ -4,42 +4,43 @@ Text-based expense tracker in Java
 
 ```text
                EXPENSE TRACKER               
-[a]dd [v]iew [e]dit [d]elete [!c]ancel [q]uit
+[a]dd [l]ist [e]dit [d]elete [!c]ancel [q]uit
 
->> a
-Add Amount: 259
-Add Method: Card
-Add Desc. : Dinner
+(*)Required
+=> a
+(*)Add amount: 259
+(*)Add method: Card
+(*)Add desc. : Dinner
 -- Expense added --
->> a
-Add Amount: 275
-Add Method: Card
-Add Desc. : Ticket
+=> a
+(*)Add amount: 275
+(*)Add method: Card
+(*)Add desc. : Ticket
 -- Expense added --
->> v
+=> l
 No.     | Amount      | Method          | Desc.
 1       | ₱259.00     | Card            | Dinner
 2       | ₱275.00     | Card            | Ticket
->> e
-Edit No.: 1
-Edit Amount (Enter to skip): 
-Edit Method (Enter to skip): Cash
-Edit Desc.  (Enter to skip): Lunch
--- Expense updated --
->> e
-Edit No.: 2
-Edit Amount (Enter to skip): 
-Edit Method (Enter to skip): 
-Edit Desc.  (Enter to skip): Movie Ticket
--- Expense updated --
->> v
+=> e
+(*)Edit no.   : 1
+   Edit amount: 
+   Edit method: Cash
+   Edit desc. : Lunch
+-- Expense edited --
+=> e
+(*)Edit no.   : 2
+   Edit amount: 
+   Edit method: 
+   Edit desc. : Movie Ticket
+-- Expense edited --
+=> l
 No.     | Amount      | Method          | Desc.
 1       | ₱259.00     | Cash            | Lunch
 2       | ₱275.00     | Card            | Movie Ticket
->> d
-Delete No.: !c
+=> d
+(*)Delete no.: !c
 -- Cancelled --
->> q
+=> q
 ```
 
 #
