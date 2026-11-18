@@ -1,6 +1,6 @@
 public class Validator {
 
-	public static boolean amountValid(String s) {
+	public static boolean validAmount(String s) {
 		try {
 			double d = Double.parseDouble(s);
 			return d > 0.0 && Double.isFinite(d);
@@ -9,7 +9,7 @@ public class Validator {
 		}
 	}
 
-	public static boolean numberValid(String s, int max) {
+	public static boolean validNumber(String s, int max) {
 		try {
 			int n = Integer.parseInt(s);
 			return n >= 1 && n <= max;

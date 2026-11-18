@@ -2,65 +2,60 @@ import java.util.Scanner;
 
 public class Prompter {
 	public static class CancelException extends RuntimeException {}
-	private static final Scanner stdin = new Scanner(System.in);
+	private static final Scanner in = new Scanner(System.in);
 
-	public static String prompt(String message) {
-		System.out.print(message);
-		String input = stdin.nextLine();
+	public static String prompt(String msg) {
+		System.out.print(msg);
+		String input = in.nextLine();
 		if (input.equals("!c"))
 			throw new CancelException();
 		return input;
 	}
 
-	public static String prompt(String message, String defaultValue) {
-		String input = Prompter.prompt(message);
-		if (!input.isBlank())
-			return input;
-		return defaultValue;
+	public static String prompt(String msg, String value) {
+		System.out.print(msg);
+		String input = in.nextLine();
+		if (input.isBlank())
+			return value;
+		if (input.equals("!c"))
+			throw new CancelException();
+		return input;
 	}
 
-	public static String promptRequired(String message) {
+	public static char promptOption(String msg) {
 		for (;;) {
-			String input = Prompter.prompt(message);
-			if (!input.isBlank())
-				return input;
-			System.err.println("-- Input required --");
-		}
-	}
-
-	public static char promptOption(String message) {
-		for (;;) {
-			String input = Prompter.prompt(message);
-			if (input.length() == 1)
-				return input.charAt(0);
-			if (input.length() > 1)
+			String input = Prompter.prompt(msg);
+			if (!input.isBlank()) {
+				if (input.length() == 1)
+					return input.charAt(0);
 				System.err.println("-- Invalid option --");
+			}
 		}
 	}
 
-	public static double promptAmount(String message) {
+	public static double promptAmount(String msg) {
 		for (;;) {
-			String amtStr = Prompter.promptRequired(message);
-			if (Validator.amountValid(amtStr))
-				return Double.parseDouble(amtStr);
+			String input = Prompter.prompt(msg);
+			if (Validator.validAmount(input))
+				return Double.parseDouble(input);
 			System.err.println("-- Invalid amount --");
 		}
 	}
 
-	public static double promptAmount(String message, double defaultValue) {
+	public static double promptAmount(String msg, double value) {
 		for (;;) {
-			String amtStr = Prompter.prompt(message, String.valueOf(defaultValue));
-			if (Validator.amountValid(amtStr))
-				return Double.parseDouble(amtStr);
+			String input = Prompter.prompt(msg, String.valueOf(value));
+			if (Validator.validAmount(input))
+				return Double.parseDouble(input);
 			System.err.println("-- Invalid amount --");
 		}
 	}
 
-	public static int promptNumber(String message, int max) {
+	public static int promptNumber(String msg, int max) {
 		for (;;) {
-			String numStr = Prompter.promptRequired(message);
-			if (Validator.numberValid(numStr, max))
-				return Integer.parseInt(numStr);
+			String input = Prompter.prompt(msg);
+			if (Validator.validNumber(input, max))
+				return Integer.parseInt(input);
 			System.err.println("-- Invalid no. --");
 		}
 	}

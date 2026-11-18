@@ -3,23 +3,23 @@
 Text-based expense tracker in Java
 
 ```text
-               EXPENSE TRACKER               
+               EXPENSE TRACKER
 [a]dd [l]ist [e]dit [d]elete [!c]ancel [q]uit
 
-(*)Required
+Fields with (*) are required
 => a
 (*)Add amount: 259
-(*)Add method: Card
-(*)Add desc. : Dinner
+   Add method: 
+   Add desc. : Dinner
 -- Expense added --
 => a
 (*)Add amount: 275
-(*)Add method: Card
-(*)Add desc. : Ticket
+   Add method: Card
+   Add desc. : Ticket
 -- Expense added --
 => l
 No.     | Amount      | Method          | Desc.
-1       | ₱259.00     | Card            | Dinner
+1       | ₱259.00     |                 | Dinner
 2       | ₱275.00     | Card            | Ticket
 => e
 (*)Edit no.   : 1

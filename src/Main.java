@@ -11,9 +11,12 @@ public class Main {
 			return;
 		}
 
-		System.out.println("               EXPENSE TRACKER               ");
-		System.out.println("[a]dd [l]ist [e]dit [d]elete [!c]ancel [q]uit\n");
-		System.out.println("(*)Required");
+		System.out.print("""
+			               EXPENSE TRACKER
+			[a]dd [l]ist [e]dit [d]elete [!c]ancel [q]uit
+
+			Fields with (*) are required
+			""");
 
 		for (;;) {
 			try {
@@ -25,7 +28,7 @@ public class Main {
 					case 'd': Main.deleteExpense(); break;
 					case 'q': return;
 					default:
-						System.out.println("-- Unknown option --");
+						System.err.println("-- Unknown option --");
 						break;
 				}
 			} catch (Prompter.CancelException e) {
@@ -38,8 +41,8 @@ public class Main {
 
 	private static void addExpense() throws SQLException {
 		double amount = Prompter.promptAmount("(*)Add amount: ");
-		String method = Prompter.promptRequired("(*)Add method: ");
-		String desc   = Prompter.promptRequired("(*)Add desc. : ");
+		String method = Prompter.prompt("   Add method: ");
+		String desc   = Prompter.prompt("   Add desc. : ");
 
 		Database.add(amount, method, desc);
 		System.out.println("-- Expense added --");
