@@ -99,7 +99,7 @@ public class Main {
 		System.out.print(msg);
 		if (!in.hasNextLine()) {
 			System.out.println();
-			System.exit(0);
+			System.exit(1);
 		}
 		String input = in.nextLine().strip();
 		if (input.equals("!c")) throw new CancelException();
