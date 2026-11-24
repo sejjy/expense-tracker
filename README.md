@@ -42,19 +42,3 @@ No.     | Amount      | Method          | Desc.
 -- Cancelled --
 => q
 ```
-
-#
-
-### Requirements
-
-- JDK version 11 or newer
-  [[download](https://www.oracle.com/java/technologies/downloads/)]
-
-#
-
-### Compile and run
-
-```sh
-$ ./compile
-$ ./run
-```
